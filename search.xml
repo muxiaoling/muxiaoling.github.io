@@ -1,6 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>备战规划方案</title>
+    <url>/2021/02/21/Java%E5%90%8E%E7%AB%AF%E5%A4%87%E6%88%98%E8%A7%84%E5%88%92%E6%96%B9%E6%A1%88/</url>
+    <content><![CDATA[<h2 id="备战规划方案"><a href="#备战规划方案" class="headerlink" title="备战规划方案"></a>备战规划方案</h2><h4 id="注意：在复习每一个模块时，要多总结，可以通过记录文档，写博客加深记忆。"><a href="#注意：在复习每一个模块时，要多总结，可以通过记录文档，写博客加深记忆。" class="headerlink" title="注意：在复习每一个模块时，要多总结，可以通过记录文档，写博客加深记忆。"></a>注意：在复习每一个模块时，要多总结，可以通过记录文档，写博客加深记忆。</h4><span id="more"></span>
+
+<p><img src="https://s2.loli.net/2022/10/26/jI4qrtB31p8k7Ec.png" alt="图片"></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;这是我的女神&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><h4 id="数据结构与算法"><a href="#数据结构与算法" class="headerlink" title="数据结构与算法"></a>数据结构与算法</h4><p>方案：</p>
+<ul>
+<li>刷完公众号【代码随想录】的算法章节</li>
+<li>做LeetCode题目（数量至少400道）</li>
+<li>看完《大话数据结构》</li>
+</ul>
+</li>
+<li><h4 id="计算机网络"><a href="#计算机网络" class="headerlink" title="计算机网络"></a>计算机网络</h4><p>方案：</p>
+<ul>
+<li>看完《图解网络》PDF</li>
+<li>刷完《计算机网络自顶向下》</li>
+</ul>
+</li>
+<li><h4 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h4><p>方案：</p>
+<ul>
+<li>看完《操作系统概念》视频</li>
+<li>看完《图解系统》PDF</li>
+</ul>
+</li>
+<li><h4 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h4><p>方案：</p>
+<ul>
+<li>刷完《MySQL45讲》</li>
+<li>刷完《MySQL技术内幕：InnoDB存储引擎》</li>
+</ul>
+</li>
+<li><h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><p>方案：</p>
+<ul>
+<li>看完《Redis设计与实现》</li>
+</ul>
+</li>
+<li><h4 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h4><p>方案：</p>
+<ul>
+<li>看完《深入理解JVM虚拟机》</li>
+<li>网上找几篇总结性博客看看</li>
+</ul>
+</li>
+<li><h4 id="Java基础"><a href="#Java基础" class="headerlink" title="Java基础"></a>Java基础</h4><p>方案：</p>
+<ul>
+<li>先把所有基础过一遍，看黑马PDF，自己总结</li>
+<li>了解Java集合源码</li>
+<li>看《Java并发编程实战》+《Java并发编程艺术》</li>
+</ul>
+</li>
+<li><h4 id="Java框架"><a href="#Java框架" class="headerlink" title="Java框架"></a>Java框架</h4><p>方案：</p>
+<ul>
+<li>了解Spring基础知识，源码 —— 看博客</li>
+<li>了解SpringBoot基础知识，源码 —— 看博客</li>
+</ul>
+</li>
+<li><h4 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h4><p>方案：</p>
+<ul>
+<li>系统性复习Linux基础知识</li>
+<li>了解Docker基础知识，总结</li>
+</ul>
+</li>
+<li><h4 id="项目"><a href="#项目" class="headerlink" title="项目"></a>项目</h4></li>
+</ol>
+<p>   方案：</p>
+<ul>
+<li>准备一个项目，了解技术栈，难点</li>
+<li>再准备一个项目，了解技术栈，难点</li>
+</ul>
+]]></content>
+      <categories>
+        <category>计划</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Intellij IDEA快捷键</title>
     <url>/2021/02/21/Intellij%20IDEA%E5%BF%AB%E6%8D%B7%E9%94%AE/</url>
     <content><![CDATA[<h1 id="Intellij-IDEA快捷键"><a href="#Intellij-IDEA快捷键" class="headerlink" title="Intellij IDEA快捷键"></a>Intellij IDEA快捷键</h1><h4 id="了解IDEA快捷键让开发效率快起来！"><a href="#了解IDEA快捷键让开发效率快起来！" class="headerlink" title="了解IDEA快捷键让开发效率快起来！"></a>了解IDEA快捷键让开发效率快起来！</h4><h3 id="1-Editing-编辑"><a href="#1-Editing-编辑" class="headerlink" title="1. Editing(编辑)"></a><strong>1. Editing(编辑)</strong></h3><span id="more"></span>
@@ -710,85 +789,6 @@
       </categories>
       <tags>
         <tag>IDEA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>备战规划方案</title>
-    <url>/2021/02/21/Java%E5%90%8E%E7%AB%AF%E5%A4%87%E6%88%98%E8%A7%84%E5%88%92%E6%96%B9%E6%A1%88/</url>
-    <content><![CDATA[<h2 id="备战规划方案"><a href="#备战规划方案" class="headerlink" title="备战规划方案"></a>备战规划方案</h2><h4 id="注意：在复习每一个模块时，要多总结，可以通过记录文档，写博客加深记忆。"><a href="#注意：在复习每一个模块时，要多总结，可以通过记录文档，写博客加深记忆。" class="headerlink" title="注意：在复习每一个模块时，要多总结，可以通过记录文档，写博客加深记忆。"></a>注意：在复习每一个模块时，要多总结，可以通过记录文档，写博客加深记忆。</h4><span id="more"></span>
-
-<p><img src="https://s2.loli.net/2022/10/26/jI4qrtB31p8k7Ec.png" alt="图片"></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;这是我的女神&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol>
-<li><h4 id="数据结构与算法"><a href="#数据结构与算法" class="headerlink" title="数据结构与算法"></a>数据结构与算法</h4><p>方案：</p>
-<ul>
-<li>刷完公众号【代码随想录】的算法章节</li>
-<li>做LeetCode题目（数量至少400道）</li>
-<li>看完《大话数据结构》</li>
-</ul>
-</li>
-<li><h4 id="计算机网络"><a href="#计算机网络" class="headerlink" title="计算机网络"></a>计算机网络</h4><p>方案：</p>
-<ul>
-<li>看完《图解网络》PDF</li>
-<li>刷完《计算机网络自顶向下》</li>
-</ul>
-</li>
-<li><h4 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h4><p>方案：</p>
-<ul>
-<li>看完《操作系统概念》视频</li>
-<li>看完《图解系统》PDF</li>
-</ul>
-</li>
-<li><h4 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h4><p>方案：</p>
-<ul>
-<li>刷完《MySQL45讲》</li>
-<li>刷完《MySQL技术内幕：InnoDB存储引擎》</li>
-</ul>
-</li>
-<li><h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><p>方案：</p>
-<ul>
-<li>看完《Redis设计与实现》</li>
-</ul>
-</li>
-<li><h4 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h4><p>方案：</p>
-<ul>
-<li>看完《深入理解JVM虚拟机》</li>
-<li>网上找几篇总结性博客看看</li>
-</ul>
-</li>
-<li><h4 id="Java基础"><a href="#Java基础" class="headerlink" title="Java基础"></a>Java基础</h4><p>方案：</p>
-<ul>
-<li>先把所有基础过一遍，看黑马PDF，自己总结</li>
-<li>了解Java集合源码</li>
-<li>看《Java并发编程实战》+《Java并发编程艺术》</li>
-</ul>
-</li>
-<li><h4 id="Java框架"><a href="#Java框架" class="headerlink" title="Java框架"></a>Java框架</h4><p>方案：</p>
-<ul>
-<li>了解Spring基础知识，源码 —— 看博客</li>
-<li>了解SpringBoot基础知识，源码 —— 看博客</li>
-</ul>
-</li>
-<li><h4 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h4><p>方案：</p>
-<ul>
-<li>系统性复习Linux基础知识</li>
-<li>了解Docker基础知识，总结</li>
-</ul>
-</li>
-<li><h4 id="项目"><a href="#项目" class="headerlink" title="项目"></a>项目</h4></li>
-</ol>
-<p>   方案：</p>
-<ul>
-<li>准备一个项目，了解技术栈，难点</li>
-<li>再准备一个项目，了解技术栈，难点</li>
-</ul>
-]]></content>
-      <categories>
-        <category>计划</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
       </tags>
   </entry>
 </search>
