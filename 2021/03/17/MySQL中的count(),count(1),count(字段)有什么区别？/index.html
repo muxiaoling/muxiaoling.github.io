@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC:300,300italic,400,400italic,700,700italic%7CArial:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" integrity="sha256-AbA177XfpSnFEvgpYu1jMygiLabzPCJCRIBtR5jGc0k=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"muxiaoling.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.13.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="count()是什么？当我们对一张数据表的记录数量进行统计时，会使用到count()函数。count() 是一个聚合函数，函数的参数不仅可以是字段名，也可以是其他任意表达式，该函数作用是统计符合查询条件的记录中，函数指定的参数不为 NULL 的记录有多少个。 count函数的使用方式有多种：count(*)、count(1)、count(字段) 等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL中的count(*),count(1),count(字段)有什么区别？">
+<meta property="og:url" content="http://muxiaoling.github.io/2021/03/17/MySQL%E4%B8%AD%E7%9A%84count(),count(1),count(%E5%AD%97%E6%AE%B5)%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Code时光机">
+<meta property="og:description" content="count()是什么？当我们对一张数据表的记录数量进行统计时，会使用到count()函数。count() 是一个聚合函数，函数的参数不仅可以是字段名，也可以是其他任意表达式，该函数作用是统计符合查询条件的记录中，函数指定的参数不为 NULL 的记录有多少个。 count函数的使用方式有多种：count(*)、count(1)、count(字段) 等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2022/11/01/HhelurAwSoJB9aW.png">
+<meta property="og:image" content="https://s2.loli.net/2022/11/01/JAVDNGwZkqjtvWI.png">
+<meta property="og:image" content="https://s2.loli.net/2022/11/01/Mbes694BWqIQXFn.png">
+<meta property="article:published_time" content="2021-03-17T00:16:18.000Z">
+<meta property="article:modified_time" content="2022-11-01T15:21:19.377Z">
+<meta property="article:author" content="~沐潇零~">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/11/01/HhelurAwSoJB9aW.png">
+
+
+<link rel="canonical" href="http://muxiaoling.github.io/2021/03/17/MySQL%E4%B8%AD%E7%9A%84count(),count(1),count(%E5%AD%97%E6%AE%B5)%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://muxiaoling.github.io/2021/03/17/MySQL%E4%B8%AD%E7%9A%84count(),count(1),count(%E5%AD%97%E6%AE%B5)%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/","path":"2021/03/17/MySQL中的count(),count(1),count(字段)有什么区别？/","title":"MySQL中的count(*),count(1),count(字段)有什么区别？"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>MySQL中的count(*),count(1),count(字段)有什么区别？ | Code时光机</title>
+  
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Code时光机</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Feel the magic of code</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#count-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">count()是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%AA%E7%A7%8Dcount-%E6%80%A7%E8%83%BD%E6%9C%80%E5%A5%BD%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">哪种count()性能最好？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8Bcount%E5%87%BD%E6%95%B0"><span class="nav-number">2.1.</span> <span class="nav-text">简单了解一下count函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#count-1-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="nav-number">2.2.</span> <span class="nav-text">count(1) 执行过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#count-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">count(*)执行过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#count-%E5%AD%97%E6%AE%B5-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B"><span class="nav-number">2.4.</span> <span class="nav-text">count(字段)执行过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%BC%E4%B8%8A%E6%89%80%E8%BF%B0"><span class="nav-number">2.5.</span> <span class="nav-text">综上所述</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E9%87%87%E7%94%A8%E9%81%8D%E5%8E%86%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9D%A5%E8%AE%A1%E6%95%B0%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">为什么要采用遍历的方式来计数？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%BC%A5%E8%A1%A5count-%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="nav-number">4.</span> <span class="nav-text">如何弥补count(*)的不足</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%B0%E8%AE%A1%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">估计法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E8%A1%A8%E4%BF%9D%E5%AD%98%E8%AE%A1%E6%95%B0%E5%80%BC"><span class="nav-number">4.2.</span> <span class="nav-text">额外表保存计数值</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="~沐潇零~"
+      src="/images/chrome-512x512.gif">
+  <p class="site-author-name" itemprop="name">~沐潇零~</p>
+  <div class="site-description" itemprop="description">Because of the interest</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/muxiaoling" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;muxiaoling" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:tjh86mu@gmail.com" title="E-Mail → mailto:tjh86mu@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/860079445" title="Get-QQ → 860079445"><i class="fa-brands fa-qq fa-fw"></i>Get-QQ</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/T860079445" title="WeiXin → T860079445"><i class="fa-brands fa-weixin fa-fw"></i>WeiXin</a>
+      </span>
+  </div>
+  <div class="cc-license site-overview-item animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/muxiaoling" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://muxiaoling.github.io/2021/03/17/MySQL%E4%B8%AD%E7%9A%84count(),count(1),count(%E5%AD%97%E6%AE%B5)%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/chrome-512x512.gif">
+      <meta itemprop="name" content="~沐潇零~">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Code时光机">
+      <meta itemprop="description" content="Because of the interest">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="MySQL中的count(*),count(1),count(字段)有什么区别？ | Code时光机">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL中的count(*),count(1),count(字段)有什么区别？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-03-17 08:16:18" itemprop="dateCreated datePublished" datetime="2021-03-17T08:16:18+08:00">2021-03-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="count-是什么？"><a href="#count-是什么？" class="headerlink" title="count()是什么？"></a>count()是什么？</h2><p>当我们对一张数据表的记录数量进行统计时，会使用到count()函数。count() 是一个聚合函数，函数的参数不仅可以是字段名，也可以是其他任意表达式，该函数作用是<strong>统计符合查询条件的记录中，函数指定的参数不为 NULL 的记录有多少个</strong>。</p>
+<p>count函数的使用方式有多种：count(*)、count(1)、count(字段) 等。<span id="more"></span></p>
+<h2 id="哪种count-性能最好？"><a href="#哪种count-性能最好？" class="headerlink" title="哪种count()性能最好？"></a>哪种count()性能最好？</h2><h3 id="简单了解一下count函数"><a href="#简单了解一下count函数" class="headerlink" title="简单了解一下count函数"></a>简单了解一下count函数</h3><p>要理解这个问题，需要弄清楚count的原理。说明：我所使用的MySQL存储引擎是基于InnoDB的。</p>
+<p>如果count()函数的参数是一个普通字段名：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(name) <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这条语句是统计user表中，name字段不为null的记录有多少条。也就是说name字段如果为null，将不会被统计进去。</p>
+<p>如果count()函数的参数是数字1，是什么意思？</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这条语句的意思是统计user表中，1这个表达式不为null的记录 有多少条。这个1就是就相当于一个表达式，他永远不为null，所以这条语句就是统计user表有多少条记录。</p>
+<p>如果将count()参数换成<code>*</code>是什么意思？</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>) <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<p>看到<code>*</code>这个字符的时候你可能会和<code>select *</code>这条语句相对应，<strong>其实并不是这样的</strong>。</p>
+<p>count(*)其实是相当于count(0)的意思，当MySQL解析count(*)时，会将*参数转化为参数 0 来处理。</p>
+<p>而0和1一样，同样作为永不为null的表达式来说，在意思上就可以理解为获取表中所有记录的条数。count(*)在性能上跟count(1)没有差异性。</p>
+<p>引用MySQL 5.7官方手册的一句话：</p>
+<blockquote>
+<p><em>InnoDB handles SELECT COUNT(*) and SELECT COUNT(1) operations in the same way. There is no performance difference.</em></p>
+<p>译：<em>InnoDB以相同的方式处理SELECT COUNT（*）和SELECT COUNT（1）操作，没有性能上的差异</em></p>
+</blockquote>
+<p>并且MySQL对count(*)和count(1)还进行了优化，当存在多个二级索引时，优化器会使用key_len 最小的二级索引进行扫描。（注意：只有当没有二级索引的时候，才会采用主键索引来进行统计。）</p>
+<p>如果有二级索引那么会采用二级索引来进行统计，因为Inode存储引擎中索引文件采用B+树的形式进行存储，Innodb引擎中聚簇索引存储的是一条完整的数据字段，二级索引存储的是部分字段，当需要进行count(*)统计时，要将磁盘中的数据，以页为单位（一页&#x3D;16kb）加载到内存中，采用二级索引可以一次加载更多的数据，减少IO次数。</p>
+<h3 id="count-1-执行过程"><a href="#count-1-执行过程" class="headerlink" title="count(1) 执行过程"></a>count(1) 执行过程</h3><p>以下面这条语句作为例子：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="number">1</span>) <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<p>针对上面这条语句，这张图表中不存在二级索引时的执行计划：</p>
+<p><img src="https://s2.loli.net/2022/11/01/HhelurAwSoJB9aW.png" alt="image-20221101165033747"></p>
+<p>这张图是创建了二级索引时的执行计划：</p>
+<p><img src="https://s2.loli.net/2022/11/01/JAVDNGwZkqjtvWI.png" alt="image-20221101164946055"></p>
+<p>InnoDB 循环遍历聚簇索引（主键索引），将读取到的记录返回给 server 层，<strong>但是不会读取记录中的任何字段的值</strong>，因为 count 函数的参数是 1，不是字段，所以不需要读取记录中的字段值。参数 1 很明显并不是 NULL，因此 server 层每从 InnoDB 读取到一条记录，就将 count 变量加 1。</p>
+<p>可以看到，count(1) 相比 count(主键字段) 少一个步骤，就是不需要读取记录中的字段值，所以通常会说 count(1) 执行效率会比 count(主键字段) 高一点。</p>
+<p>但是，如果表里有二级索引时，InnoDB 循环遍历的对象就二级索引了。</p>
+<h3 id="count-执行过程"><a href="#count-执行过程" class="headerlink" title="count(*)执行过程"></a>count(*)执行过程</h3><p><strong>count(*) 其实等于 count(<code>0</code>)<strong>，也就是说，当你使用 count(*) 时，MySQL 会将 <code>*</code> 参数转化为参数 0 来处理。所以，</strong>count(*) 执行过程跟 count(1) 执行过程基本一样的</strong>，性能没有什么差异。</p>
+<p>当没有二级索引的时候，同样也是采用主键索引来进行统计。</p>
+<h3 id="count-字段-执行过程"><a href="#count-字段-执行过程" class="headerlink" title="count(字段)执行过程"></a>count(字段)执行过程</h3><p>以下面这条语句为例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span><span class="operator">/</span> name不是索引，普通字段</span><br><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(name) <span class="keyword">from</span> <span class="keyword">user</span>;</span><br></pre></td></tr></table></figure>
+
+<p>对于这个不存在二级索引时的查询，会采用全表扫描的方式来计数，所以他的执行效率是比较差的。</p>
+<p><img src="https://s2.loli.net/2022/11/01/Mbes694BWqIQXFn.png" alt="image-20221101170515004"></p>
+<h3 id="综上所述"><a href="#综上所述" class="headerlink" title="综上所述"></a>综上所述</h3><p>count(1)、 count(*)、 count(主键字段)在执行的时候，如果表里存在二级索引，优化器就会选择二级索引进行扫描。所以，如果要执行 count(1)、 count(*)、 count(主键字段) 时，尽量在数据表上建立二级索引，这样优化器会自动采用 key_len 最小的二级索引进行扫描，相比于扫描主键索引效率会高一些。尽量避免使用 count(字段) 来统计记录个数，因为它的效率是最差的，会采用全表扫描的方式来统计。</p>
+<h2 id="为什么要采用遍历的方式来计数？"><a href="#为什么要采用遍历的方式来计数？" class="headerlink" title="为什么要采用遍历的方式来计数？"></a>为什么要采用遍历的方式来计数？</h2><p>前面的案例都是基于 Innodb 存储引擎来说明的，但是在 MyISAM 存储引擎里，执行 count 函数的方式是不一样的，通常在没有任何查询条件下的 count(*)，MyISAM 的查询速度要明显快于 InnoDB。</p>
+<p>使用 MyISAM 引擎时，执行 count 函数只需要 O(1 )复杂度，这是因为每张 MyISAM 的数据表都有一个 meta 信息有存储了row_count值，由表级锁保证一致性，所以直接读取 row_count 值就是 count 函数的执行结果。</p>
+<p><strong>而 InnoDB 存储引擎是支持事务的，同一个时刻的多个查询，由于多版本并发控制（MVCC）的原因，InnoDB 表“应该返回多少行”也是不确定的，所以无法像 MyISAM一样，只维护一个 row_count 变量。</strong></p>
+<h2 id="如何弥补count-的不足"><a href="#如何弥补count-的不足" class="headerlink" title="如何弥补count(*)的不足"></a>如何弥补count(*)的不足</h2><p>如果对于一张数据量大的表来说，其实是很不好的。因为数据库会逐条统计得到答案。</p>
+<p>所以面对大表的记录统计，我们可以采用两种方式来统计：①估计法 ②额外表保存计数值</p>
+<h3 id="估计法"><a href="#估计法" class="headerlink" title="估计法"></a>估计法</h3><p>业务对于统计个数不需要很精确，可以使用 <code>show table status</code> 或者 <code>explain</code> 命令来表进行估算。</p>
+<p>执行 explain 命令效率是很高的，因为它并不会真正的去查询。</p>
+<blockquote>
+<p>mysql-5.5之前：</p>
+<p>首先找到查询第一个记录所在的page（记为PLeft），统计PLeft里的记录数（记为Records_PLeft），之后找到最后一个记录所在的page（记为PRight），统计PRight的记录数（Records_PRight），之后将Records_PLeft与Records_PRight取平均，最后乘以总共的page数目（记为Page_Num）。公式如下：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">Rows</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="punctuation">(</span><span class="type">Records_PLeft</span> <span class="operator">+</span> <span class="type">Records_PRight</span><span class="punctuation">)</span><span class="operator">/</span><span class="number">2</span><span class="punctuation">)</span><span class="operator">*</span><span class="type">Page_Num</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<blockquote>
+<p>mysql-5.5之后：</p>
+<p>上述预估偏差大的关键在于有偏，而有偏的关键在于采样的page数太少了，事实上只采样了边界2个，新算法的思路很简单，增加采样数目，比如采样10个page，这样可以在一定程度上降低偏差。</p>
+<p>具体来说，mysql除了边界2个外，还沿着左侧page往右连续查找8个page，如果总的page数目小于等于10个，那么预估的Rows和真实的Rows一致。虽然该方式在一定程度上缓解了有偏的问题，但是不准确还是存在的。公式如下：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">Rows</span> <span class="operator">=</span> <span class="punctuation">(</span><span class="punctuation">(</span><span class="type">Records_PLeft</span> <span class="operator">+</span>  <span class="type">Records_P1</span> <span class="operator">+</span> <span class="type">Records_P2</span> <span class="operator">+</span> <span class="operator">...</span> <span class="operator">+</span> <span class="type">Records_P8</span> <span class="operator">+</span> <span class="type">Records_PRight</span><span class="punctuation">)</span><span class="operator">/</span><span class="number">10</span><span class="punctuation">)</span><span class="operator">*</span><span class="type">Page_Num</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<h3 id="额外表保存计数值"><a href="#额外表保存计数值" class="headerlink" title="额外表保存计数值"></a>额外表保存计数值</h3><p>对于记录数较多的表，如果是想精确的获取表的记录总数，我们可以将这个计数值保存到单独的一张计数表中。</p>
+<p>当我们在数据表插入一条记录的同时，将计数表中的计数字段 + 1，在新增和删除操作时，我们需要额外维护这个计数表。</p>
+
+    </div>
+
+    
+    
+    
+	<div>
+		
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:12px;">--------------本文结束<i class="fa fa-paw"></i>感谢您的阅读--------------</div>
+    
+</div>
+		
+	</div>
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>~沐潇零~
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://muxiaoling.github.io/2021/03/17/MySQL%E4%B8%AD%E7%9A%84count(),count(1),count(%E5%AD%97%E6%AE%B5)%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F/" title="MySQL中的count(*),count(1),count(字段)有什么区别？">http://muxiaoling.github.io/2021/03/17/MySQL中的count(),count(1),count(字段)有什么区别？/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/21/%E7%BC%93%E5%AD%98%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/" rel="prev" title="缓存常见问题">
+                  <i class="fa fa-chevron-left"></i> 缓存常见问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">~沐潇零~</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
