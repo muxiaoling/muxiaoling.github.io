@@ -123,6 +123,7 @@
         <category>缓存</category>
       </categories>
       <tags>
+        <tag>Redis</tag>
         <tag>数据库</tag>
       </tags>
   </entry>
@@ -493,6 +494,7 @@
         <category>缓存</category>
       </categories>
       <tags>
+        <tag>Redis</tag>
         <tag>数据库</tag>
       </tags>
   </entry>
