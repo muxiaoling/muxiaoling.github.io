@@ -1,60 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>缓存常见问题</title>
-    <url>/p/5e0bc5d1/</url>
-    <content><![CDATA[<h2 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h2><p>缓存击穿某个热点key过期，导致大量请求打到数据库上，导致数据库压力激增的一种现象。</p>
-<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>分布式锁：对访问数据库的大量key加分布式锁，同一时刻，只允许一个请求访问，访问过后将结果缓存到redis中，这样后来的请求便可以直接获取redis中的结果。</p>
-<span id="more"></span>
-
-<h2 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h2><p>缓存雪崩是短时间内，缓存中的key大面积过期，导致所有请求打到数据库中。</p>
-<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>可以给不同key的过期时间加上随机值，防止某个时间大量的key同时过期。对应热key，可以设置成永不过期的方式。</p>
-<h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>缓存穿透是大量请求中的key在缓存中不存在，数据库中也不存在，导致数据库压力过大的一种现象。</p>
-<h3 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h3><p><strong>缓存空对象</strong></p>
-<p>redis是key-value存储的键值对数据库，可以将不存在的key缓存起来，下次访问该key时便不会走数据库。但是如果大量key都是不同的，那就会造成redis中缓存大量无效的key，浪费内存。</p>
-<p><strong>布隆过滤器</strong></p>
-<p>采用位数组的方式，不直接存储元素，而是存储元素是否存在的状态 。</p>
-<p>具体思想：</p>
-<ul>
-<li><p>一个初始状态都为0的位数组</p>
-<p><img src="https://s2.loli.net/2022/10/27/ehrDagX5YdnLHG6.png" alt="位数组"></p>
-</li>
-<li><p>元素经过N个散列函数计算出元素在数组当中的位置，并且将数组中对应位置的0改成1 </p>
-<p><img src="https://s2.loli.net/2022/10/27/qWPKFhHbYlO51jX.png" alt="散列"></p>
-</li>
-<li><p>如果此时需要判断元素X是否存在，那么元素X也会经过这N个散列函数的运算而得到数组中的若干个位置，如果得到的若干个位置中的值均为1，那么则证明元素X很可能存在与集合当中，反之则证明元素X一定不存在于集合当中。 </p>
-<p><img src="https://s2.loli.net/2022/10/27/KOSL2IePpTxFYwi.png" alt="不存在"></p>
-</li>
-</ul>
-<p>优缺点：</p>
-<p>优点：在空间和时间方面，都有着巨大的优势。因为布隆过滤器不是存完整的数据，而存是一个二进制向量，能节省大量的内存空间。在时间复杂度方面，由于计算时是根据散列函数计算查询的，那么假设有N个散列函数，那么时间复杂度就是O(N)；</p>
-<p>缺点：存在一定的误判（存进布隆过滤器里的元素越多，误判率越高）；不能删除布隆过滤器里的元素 。</p>
-<p><strong>布隆过滤器应用</strong></p>
-<ul>
-<li><p>Redission实现布隆过滤器</p>
-<ol>
-<li><p>引入依赖</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--redisson--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.redisson<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>redisson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.13.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>编写配置类</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedissonConfig</span> &#123;</span><br><span class="line">    <span class="comment">//redis的ip地址</span></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;spring.redis.host&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String redisHost;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//redis端口号</span></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;spring.redis.port&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String redisPort;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//redis密码</span></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;spring.redis.password&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String redisPassword;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RedissonClient <span class="title function_">redissonClient</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">Config</span> <span class="variable">config</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Config</span>();</span><br><span class="line">        config.useSingleServer().setAddress(<span class="string">&quot;redis://&quot;</span>+ redisHost + <span class="string">&quot;:&quot;</span> + redisPort)</span><br><span class="line">        .setPassword(redisPassword);</span><br><span class="line">        <span class="comment">// 创建RedissonClient对象</span></span><br><span class="line">        <span class="keyword">return</span> Redisson.create(config);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>应用</p>
-<p>利用单例模式将RBloomFilter封装成一个工具类，以便项目使用。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BloomFilterUtil</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Redisson redisson;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BloomFilterUtil</span><span class="params">(Redisson redisson)</span>&#123;</span><br><span class="line">        BloomFilterUtil.redisson = redisson;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">BloomFilterUtil</span> <span class="params">()</span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> RBloomFilter&lt;Long&gt; bloomFilter;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> RBloomFilter&lt;Long&gt; <span class="title function_">getBloomFilter</span><span class="params">(String name)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bloomFilter == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (BloomFilterUtil.class) &#123;</span><br><span class="line">                <span class="keyword">if</span> (bloomFilter == <span class="literal">null</span>) &#123;</span><br><span class="line">                    bloomFilter = redisson.getBloomFilter(name);</span><br><span class="line">                    bloomFilter.tryInit(<span class="number">100000000</span>,<span class="number">0.04</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> bloomFilter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">addElement</span><span class="params">(Long element, String name)</span> &#123;</span><br><span class="line">        getBloomFilter(name).add(element);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">contains</span><span class="params">(Long element, String name)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> getBloomFilter(name).contains(element);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-</ol>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>缓存</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-        <tag>数据库</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>MySQL中的count(*),count(1),count(字段)有什么区别？</title>
     <url>/p/5fed1c16/</url>
     <content><![CDATA[<h2 id="count-是什么？"><a href="#count-是什么？" class="headerlink" title="count()是什么？"></a>count()是什么？</h2><p>当我们对一张数据表的记录数量进行统计时，会使用到count()函数。count() 是一个聚合函数，函数的参数不仅可以是字段名，也可以是其他任意表达式，该函数作用是<strong>统计符合查询条件的记录中，函数指定的参数不为 NULL 的记录有多少个</strong>。</p>
@@ -125,6 +71,60 @@
       </categories>
       <tags>
         <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>缓存常见问题</title>
+    <url>/p/5e0bc5d1/</url>
+    <content><![CDATA[<h2 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h2><p>缓存击穿某个热点key过期，导致大量请求打到数据库上，导致数据库压力激增的一种现象。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>分布式锁：对访问数据库的大量key加分布式锁，同一时刻，只允许一个请求访问，访问过后将结果缓存到redis中，这样后来的请求便可以直接获取redis中的结果。</p>
+<span id="more"></span>
+
+<h2 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h2><p>缓存雪崩是短时间内，缓存中的key大面积过期，导致所有请求打到数据库中。</p>
+<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>可以给不同key的过期时间加上随机值，防止某个时间大量的key同时过期。对应热key，可以设置成永不过期的方式。</p>
+<h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><p>缓存穿透是大量请求中的key在缓存中不存在，数据库中也不存在，导致数据库压力过大的一种现象。</p>
+<h3 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h3><p><strong>缓存空对象</strong></p>
+<p>redis是key-value存储的键值对数据库，可以将不存在的key缓存起来，下次访问该key时便不会走数据库。但是如果大量key都是不同的，那就会造成redis中缓存大量无效的key，浪费内存。</p>
+<p><strong>布隆过滤器</strong></p>
+<p>采用位数组的方式，不直接存储元素，而是存储元素是否存在的状态 。</p>
+<p>具体思想：</p>
+<ul>
+<li><p>一个初始状态都为0的位数组</p>
+<p><img src="https://s2.loli.net/2022/10/27/ehrDagX5YdnLHG6.png" alt="位数组"></p>
+</li>
+<li><p>元素经过N个散列函数计算出元素在数组当中的位置，并且将数组中对应位置的0改成1 </p>
+<p><img src="https://s2.loli.net/2022/10/27/qWPKFhHbYlO51jX.png" alt="散列"></p>
+</li>
+<li><p>如果此时需要判断元素X是否存在，那么元素X也会经过这N个散列函数的运算而得到数组中的若干个位置，如果得到的若干个位置中的值均为1，那么则证明元素X很可能存在与集合当中，反之则证明元素X一定不存在于集合当中。 </p>
+<p><img src="https://s2.loli.net/2022/10/27/KOSL2IePpTxFYwi.png" alt="不存在"></p>
+</li>
+</ul>
+<p>优缺点：</p>
+<p>优点：在空间和时间方面，都有着巨大的优势。因为布隆过滤器不是存完整的数据，而存是一个二进制向量，能节省大量的内存空间。在时间复杂度方面，由于计算时是根据散列函数计算查询的，那么假设有N个散列函数，那么时间复杂度就是O(N)；</p>
+<p>缺点：存在一定的误判（存进布隆过滤器里的元素越多，误判率越高）；不能删除布隆过滤器里的元素 。</p>
+<p><strong>布隆过滤器应用</strong></p>
+<ul>
+<li><p>Redission实现布隆过滤器</p>
+<ol>
+<li><p>引入依赖</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--redisson--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.redisson<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>redisson<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.13.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写配置类</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RedissonConfig</span> &#123;</span><br><span class="line">    <span class="comment">//redis的ip地址</span></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;spring.redis.host&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String redisHost;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//redis端口号</span></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;spring.redis.port&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String redisPort;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//redis密码</span></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;spring.redis.password&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String redisPassword;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RedissonClient <span class="title function_">redissonClient</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">Config</span> <span class="variable">config</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Config</span>();</span><br><span class="line">        config.useSingleServer().setAddress(<span class="string">&quot;redis://&quot;</span>+ redisHost + <span class="string">&quot;:&quot;</span> + redisPort)</span><br><span class="line">        .setPassword(redisPassword);</span><br><span class="line">        <span class="comment">// 创建RedissonClient对象</span></span><br><span class="line">        <span class="keyword">return</span> Redisson.create(config);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>应用</p>
+<p>利用单例模式将RBloomFilter封装成一个工具类，以便项目使用。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BloomFilterUtil</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Redisson redisson;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">BloomFilterUtil</span><span class="params">(Redisson redisson)</span>&#123;</span><br><span class="line">        BloomFilterUtil.redisson = redisson;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">BloomFilterUtil</span> <span class="params">()</span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> RBloomFilter&lt;Long&gt; bloomFilter;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> RBloomFilter&lt;Long&gt; <span class="title function_">getBloomFilter</span><span class="params">(String name)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bloomFilter == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (BloomFilterUtil.class) &#123;</span><br><span class="line">                <span class="keyword">if</span> (bloomFilter == <span class="literal">null</span>) &#123;</span><br><span class="line">                    bloomFilter = redisson.getBloomFilter(name);</span><br><span class="line">                    bloomFilter.tryInit(<span class="number">100000000</span>,<span class="number">0.04</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> bloomFilter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">addElement</span><span class="params">(Long element, String name)</span> &#123;</span><br><span class="line">        getBloomFilter(name).add(element);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">boolean</span> <span class="title function_">contains</span><span class="params">(Long element, String name)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> getBloomFilter(name).contains(element);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>缓存</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+        <tag>数据库</tag>
       </tags>
   </entry>
   <entry>
