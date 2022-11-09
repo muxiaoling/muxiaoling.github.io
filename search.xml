@@ -123,7 +123,7 @@
         <category>缓存</category>
       </categories>
       <tags>
-        <tag>Redis</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
   <entry>
@@ -493,7 +493,7 @@
         <category>缓存</category>
       </categories>
       <tags>
-        <tag>Redis</tag>
+        <tag>redis</tag>
       </tags>
   </entry>
 </search>
