@@ -490,7 +490,7 @@
 <p>listpack 一样可以支持从后往前遍历的。<code>listpack.c/lpDecodeBacklen()</code>就可以从当前列表项起始位置的指针开始，向左逐个字节解析，得到前一项的 entry-len 值。</p>
 ]]></content>
       <categories>
-        <category>缓存数据库</category>
+        <category>缓存,数据库</category>
       </categories>
       <tags>
         <tag>Redis</tag>
