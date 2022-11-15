@@ -130,10 +130,10 @@
     <title>Redis持久化技术详解</title>
     <url>/p/b560d14e/</url>
     <content><![CDATA[<h2 id="AOF持久化"><a href="#AOF持久化" class="headerlink" title="AOF持久化"></a>AOF持久化</h2><h3 id="AOF持久化介绍"><a href="#AOF持久化介绍" class="headerlink" title="AOF持久化介绍"></a>AOF持久化介绍</h3><p>Redis 每执行一条写操作命令，就把该命令以追加的方式写入到一个日志文件里，就是 Redis 里的 <strong>AOF(*Append Only File*)</strong> 持久化功能。</p>
-<p><img src="https://s2.loli.net/2022/11/11/hYiOrEdF9nRBDWz.png" alt="image-20221111204423513"></p>
 <p><strong>AOF日志文件内容解释：</strong></p>
-<p>「<code>*3</code>」表示当前命令有三个部分，每部分都是以「<code>$+数字</code>」开头，后面紧跟着具体的命令、键或值。然后，这里的「<code>数字</code>」表示这部分中的命令、键或值一共有多少字节。</p>
+<p>「<code>*3</code>」表示当前命令有三个部分，每部分都是以「<code>$+数字</code>」开头，后面紧跟着具体的命令、键或值。然后，这里的「<code>数字</code>」表示这部分中的命令、键或值一共有多少字节。 <span id="more"></span></p>
 <p>eg：「<code>$3 set</code>」表示这部分有 3 个字节，也就是「<code>set</code>」命令这个字符串的长度。</p>
+<p><img src="https://s2.loli.net/2022/11/11/hYiOrEdF9nRBDWz.png" alt="image-20221111204423513"></p>
 <p><strong>Redis 是先执行写操作命令，再将命令记录到日志文件的好处：</strong></p>
 <ul>
 <li><strong>避免出现记录错误命令的情况</strong>：先执行命令，如果命令执行成功，就说明这条命令是符合语法规则的，避免了记录日志时进行冗余的语法检查。</li>
