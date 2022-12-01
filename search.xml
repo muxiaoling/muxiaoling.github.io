@@ -21,6 +21,8 @@
 </tbody></table>
 <p>timestamp时间戳，表示当前时间到Unix元年（1970 年 1 月 1 日 0 时 0 分 0 秒）的秒数</p>
 <p>对于某些时间的计算，如果是以 <code>datetime</code> 的形式会比较困难，假如某人是 <code>1994-1-20 06:06:06</code> 出生，现在的时间是 <code>2021-10-1 20:04:50</code> ，那么要计算存活了多少秒 用 <code>datetime</code> 还需要函数进行转换，但是 <code>timestamp</code> 直接相减就行。</p>
+<span id="more"></span>
+
 <h2 id="时区"><a href="#时区" class="headerlink" title="时区"></a>时区</h2><p><code>timestamp</code> 只占 4 个字节，而且是以<code>utc</code>的格式储存， 它会自动检索当前时区并进行转换。如果储存时的时区和检索时的时区不一样，那么拿出来的数据也不一样。</p>
 <p><code>datetime</code>以 8 个字节储存，不会进行时区的检索。存的时间什么拿到的就是什么时间。</p>
 <h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p><strong>TIMESTAMP 使用场景：计算飞机飞行时间</strong></p>
