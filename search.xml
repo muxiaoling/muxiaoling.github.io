@@ -1,6 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>MySQL中datetime和timestamp的区别？</title>
+    <url>/p/773a7712/</url>
+    <content><![CDATA[<h2 id="表示范围"><a href="#表示范围" class="headerlink" title="表示范围"></a>表示范围</h2><table>
+<thead>
+<tr>
+<th>类型</th>
+<th>表示范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>datetime</td>
+<td>‘1000-01-01 00:00:00.000000’ to ‘9999-12-31 23:59:59.999999’</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>‘1970-01-01 00:00:01.000000’ to ‘2038-01-19 03:14:07.999999’</td>
+</tr>
+</tbody></table>
+<p>timestamp时间戳，表示当前时间到Unix元年（1970 年 1 月 1 日 0 时 0 分 0 秒）的秒数</p>
+<p>对于某些时间的计算，如果是以 <code>datetime</code> 的形式会比较困难，假如某人是 <code>1994-1-20 06:06:06</code> 出生，现在的时间是 <code>2021-10-1 20:04:50</code> ，那么要计算存活了多少秒 用 <code>datetime</code> 还需要函数进行转换，但是 <code>timestamp</code> 直接相减就行。</p>
+<h2 id="时区"><a href="#时区" class="headerlink" title="时区"></a>时区</h2><p><code>timestamp</code> 只占 4 个字节，而且是以<code>utc</code>的格式储存， 它会自动检索当前时区并进行转换。如果储存时的时区和检索时的时区不一样，那么拿出来的数据也不一样。</p>
+<p><code>datetime</code>以 8 个字节储存，不会进行时区的检索。存的时间什么拿到的就是什么时间。</p>
+<h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p><strong>TIMESTAMP 使用场景：计算飞机飞行时间</strong></p>
+<p>一架飞机，从中国北京起飞，降落在美国纽约，计算它从北京飞往纽约的飞行时间。飞机在北京时间 2021-10-10 11:05:00 从北京起飞，在纽约时间 2021-10-10 09:50:00 降落</p>
+<p>这个场景中，如果使用 <code>TIMESTAMP</code> 来存时间，起飞和降落时间的值，都会被转换成 UTC 时间，所以它们直接相减即可获得结果。但如果使用 <code>DATATIME</code> 格式存时间，还需要进行转换，才可以完成，容易出错。</p>
+<p><strong>DATATIME 使用场景：记录信息修改时间</strong></p>
+<p>如果只是记录文件修改时间，最后更新时间这种不涉及加减转换的情况，用 <code>DATATIME</code> 来存更直接，更方便，可读性高，直接读取存储时的时间，不容易出错。</p>
+<h2 id="存储相关"><a href="#存储相关" class="headerlink" title="存储相关"></a>存储相关</h2><ul>
+<li><p><code>TIMESTAMP</code> ：4 个字节整型，存储 UTC 时间秒（小数秒+3 个字节）</p>
+</li>
+<li><p><code>DATETIME</code>：</p>
+<ol>
+<li><p><code>（5.6.4 之前）</code></p>
+<blockquote>
+<p>8 个字节， 其中 4 个字节整型 YYYY×10000 + MM×100 + DD 和 4 个字节整型 HH×10000 + MM×100 + SS</p>
+</blockquote>
+</li>
+<li><p><code>（5.6.4 之后）</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"> 1 bit  符号位          (1= 整数, 0=负数)</span><br><span class="line">17 bits year*13+month  (year 0-9999, month 0-12)</span><br><span class="line"> 5 bits day            (0-31)</span><br><span class="line"> 5 bits hour           (0-23)</span><br><span class="line"> 6 bits minute         (0-59)</span><br><span class="line"> 6 bits second         (0-59)</span><br><span class="line">---------------------------</span><br><span class="line">40 bits = 5 bytes</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>占据字节</th>
+<th>表示形式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>timestamp</td>
+<td>4 字节</td>
+<td>yyyy-mm-dd hh:mm:ss</td>
+</tr>
+<tr>
+<td>datetime</td>
+<td>8(5) 字节</td>
+<td>yyyy-mm-dd hh:mm:ss</td>
+</tr>
+</tbody></table>
+<p><strong>使用 <code>now()</code> 存储当前时间时，保存的实际值，是否与当前计算机时间一致？</strong></p>
+<ul>
+<li><code>TIMESTAMP</code>：可能不一致。存储值会被转换成 UTC 时间值再存入数据库。</li>
+<li><code>DATETIME</code>：与当前时间是一致的。</li>
+</ul>
+<p><strong>如果存入的是 <code>NULL</code> 时，两个类型如何存储？</strong></p>
+<ul>
+<li><code>TIMESTAMP</code>：会自动存储当前时间（ <code>now()</code> ）。</li>
+<li><code>DATETIME</code>：不会自动存储当前时间，会直接存入 <code>NULL</code> 值。</li>
+</ul>
+<h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><p>1.新建一个包含<code>TIMESTAMP</code> &amp; <code>DATATIME</code> 两个数据类型字段的<code>time_demo</code>表：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">CREATE TABLE time_demo(</span><br><span class="line">	`timestamp` timestamp,</span><br><span class="line">	`datetime` datetime</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>2.往表中插入三组数据，分别是null值，当前时间now()，指定时间</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">insert into time_demo values</span><br><span class="line">(NULL,NULL),</span><br><span class="line">(now(),now()),</span><br><span class="line">(&#x27;19970701171207&#x27;,&#x27;19970701171207&#x27;);</span><br></pre></td></tr></table></figure>
+
+<p>3.使用 <code>SELECT</code> 看一下数据库中的存储结果：</p>
+<p>MySQL8版本的数据为：</p>
+<p><img src="https://s2.loli.net/2022/12/01/Bl95Q8NPevjw4cF.png" alt="image-20221201124742215"></p>
+<p>MySQL5.7版本的数据为：</p>
+<p><img src="https://s2.loli.net/2022/12/01/tLMEImcJigVWn3T.png" alt="image-20221201124948332"></p>
+<p>4.将时区从+8区改为+10区，并查询数据</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">set time_zone = &#x27;+10:00&#x27;;</span><br><span class="line">select * from time_demo;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/12/01/DAzKrSLBe4cx5yp.png" alt="image-20221201125207263"></p>
+<p><strong>实验结论：</strong></p>
+<ul>
+<li>向数据插入 <code>NULL</code> 时：<code>timestamp</code>存入了当前时间（MySQL8版本为NULL），而<code>datetime</code> 直接存了 <code>NULL</code> 本身。</li>
+<li>向数据插入 <code>now()</code> 时：更改时区后，<code>timestamp</code> 随时区变化，<code>datetime</code> 没有变化。</li>
+<li>数据库直接插入时间值：更改时区后，<code>timestamp</code> 随时区变化，<code>datetime</code> 没有变化。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MySQL中的count(*),count(1),count(字段)有什么区别？</title>
     <url>/p/5fed1c16/</url>
     <content><![CDATA[<h2 id="count-是什么？"><a href="#count-是什么？" class="headerlink" title="count()是什么？"></a>count()是什么？</h2><p>当我们对一张数据表的记录数量进行统计时，会使用到count()函数。count() 是一个聚合函数，函数的参数不仅可以是字段名，也可以是其他任意表达式，该函数作用是<strong>统计符合查询条件的记录中，函数指定的参数不为 NULL 的记录有多少个</strong>。</p>
